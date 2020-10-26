@@ -1,10 +1,10 @@
-# Приложение Star DB
+# Онлайн магазин ReStore
 
-Приложение позволяет просмотривать корабли, персонажей и планеты из саги «Звездные войны»
+Небольшое приложение, имитируещее работу части функционала реального интернет-магазина. Включает главную сраницу с катологом товаром и страницу с выбраными товарами. Реализован следующий функционал: добавление товаров к корзину, увеличение/уменьшения количества товаров в корзине, удаление товаров из корзины, подсчет общей стоимости и количества товаров в корзинне.
 
-**Задача**: написать код компонентов с использованием React.js и его основных паттернов. Научиться обрабатывать серверные запросы и внедрять асинхронный код в синхронную работу приложения. Реализовать маршрутизацию в SPA-приложении.
+**Задача**: написать код компонентов с использованием React.js и его основных паттернов. Детально разбрать самую попульрную библиотеку для одностороннего потока данных - Redux, узнать ее особеннности. Научиться правильно работать с Redux в React приложении. Освоиить применение React + Redux на примере реального приложения.
 
-В проекте используеться реальный сервис - https://swapi.dev для того, чтобы получать данные из API. Изображение кораблей, персонажей и планет подгружаются с ресурса https://starwars-visualguide.com, который так же работает с https://swapi.dev.
+ReStore использует mock (имитацию) сервера, чтобы работать с данными. Но проект лекго использовать с настоящим сервером.
 
 ## Доступные команды
 
@@ -14,82 +14,80 @@
 ##
 #### В процессе создания приложение были изучены и применены на практике следующие инструменты:
 
-* Работа с REST API 
+* Работа с асинхронными данными 
 * Обработка ошибок сети в компоненте
-* Lifecycle методы 
 * Паттерны ппроектирования:
   * *Provider*
-  * *Render props*
   * *Event switch*
   * *Компоненты высшего порядка (High-order components)*
-* Использование Context API
-* Simple routing, роутинг со Switch
+  * *Layout component*
+  * *Container component*
+* Роутинг со Switch
+* Pure function
+* Flux-архитектура
+* Использование Redux для управления состоянием приложения
+* side-effects в Redux: создание и использование Middlewares
+* Асинхронные action с redux-thunk
 
 ## Структура проекта
 ```
-├── src/                                 # Исходники
-│   ├── components/                      # Компоненты
-│   │   ├── app/                         # Главная страница
+├── src/                                     # Исходники
+│   ├── actions/                             # Action creators
+│   │   └── index.js                         # 
+│   ├── components/                          # Компоненты
+│   │   ├── app/                             # Главный
 │   │   │   ├── app.css                  
 │   │   │   ├── app.js                    
-│   │   │   └── index.js                 # Вспомогательный файл для import/export из компонента
-│   │   ├── error-boundry/               # Предохранитель
-│   │   │   ├── error-boundry.css        
+│   │   │   └── index.js                     # Вспомогательный файл для import/export из компонента
+│   │   ├── book-list/                       # Список товаров на странице
+│   │   │   ├── book-list.css        
+│   │   │   ├── book-list.js         
+│   │   │   └── index.js                 
+│   │   ├── book-list-item/                  # Элемент списка
+│   │   │   ├── book-list-item.css      
+│   │   │   ├── book-list-item.js       
+│   │   │   └── index.js                 
+│   │   ├── bookstore-service-context/       # Contex API          
+│   │   │   ├── bookstore-service-context.js                    
+│   │   │   └── index.js                 
+│   │   ├── error-boundry/                   # Предохранитель
+│   │   │   ├── error-boundry.css         
 │   │   │   ├── error-boundry.js         
 │   │   │   └── index.js                 
-│   │   ├── error-indicator/             # Сообщение об ошибке
-│   │   │   ├── error-indicator.css      
-│   │   │   ├── error-indicator.js       
+│   │   ├── error-indicator/                 # Сообщение об ошибке
+│   │   │   ├── error-indicator.css         
+│   │   │   ├── error-indicator.js          
 │   │   │   └── index.js                 
-│   │   ├── header/                      # Шапка проекта
-│   │   │   ├── header.css               
-│   │   │   ├── header.js                    
+│   │   ├── hoc/                             # Компоненты высшего порядка
+│   │   │   ├── with-bookstore-services.js   # HOC для работы с контекстом        
 │   │   │   └── index.js                 
-│   │   ├── hoc-helper/                  # Компоненты высшего порядка
-│   │   │   ├── compoce.js               # Функция compose
-│   │   │   ├── with-data.js             # HOC with-data
-│   │   │   └── with-swapi-service.js    # HOC with-swapi-service
-│   │   ├── item-details/                # Блок с подробным описанием элемента
-│   │   │   ├── item-details.css         
-│   │   │   ├── item-details.js          
+│   │   ├── pages/                           # Страницы приложения
+│   │   │   ├── cart-page.js                 # Страница заказа
+│   │   │   ├── home-page.js                 # Страница с каталогом товаров/главная
+│   │   ├── shop-header/                     # Шапка проекта
+│   │   │   ├── shop-header.css         
+│   │   │   ├── shop-header.js         
 │   │   │   └── index.js                 
-│   │   ├── item-list/                   # Список элементов
-│   │   │   ├── item-list.css            
-│   │   │   ├── iitem-list.js            
+│   │   ├── shopping-cart-table/             # Таблица с выбранными товарами для покупки
+│   │   │   ├── shopping-cart-table.css                  
+│   │   │   ├── shopping-cart-table.js                   
 │   │   │   └── index.js                 
-│   │   ├── pages/                       # Страницы приложения
-│   │   │   ├── login-page.js            # Страница регистрации
-│   │   │   ├── people-page.js           # Страница с персонажами
-│   │   │   ├── planet-page.js           # Страница с планетами
-│   │   │   ├── secret-page.js           # Страница доступная для зарегистрированных пользователей
-│   │   │   ├── starship-page.js         # Страница с короблями
-│   │   │   └── index.js                 
-│   │   ├── random-planet/               # Блок со случайной планетой
-│   │   │   ├── random-planet.css         
-│   │   │   ├── random-planet.js         
-│   │   │   └── index.js                 
-│   │   ├── row/                         # Структурный компонент
-│   │   │   ├── row.css                  
-│   │   │   ├── row.js                   
-│   │   │   └── index.js                 
-│   │   ├── spinner/                     # Спиннер для загрузки
-│   │   │   ├── spinner.css              
-│   │   │   ├── spinner.js               
-│   │   │   └── index.js                
-│   │   ├── swapi-service-context/       # Context API
-│   │   │   ├── swapi-service-context.js  
-│   │   │   └── index.js                      
-│   │   └── sw-components/               # Компоненты 
-│   │       ├── item-lists.js            # Списки с персонажами, c планетами, с короблями
-│   │       ├── person-details.js        # Блок с подробным описанием персонажа
-│   │       ├── planet-details.js        # Блок с подробным описанием планеты
-│   │       ├── starship-details.js      # Блок с подробным описанием коробля
+│   │   └── spinner/                         # Спиннер для загрузки
+│   │       ├── spinner.css              
+│   │       ├── spinner.js                   
 │   │       └── index.js                
-│   └── services/                        # Сервисы
-│   │   └── swapi-service.js             # Сервис для работы с API
-│   └── index.js                         # Корневой файл проекта                                  
-├── .gitignore                           # Список исключённых файлов из Git
-├── README.md                            # Описание проекта
-├── package-lock.json                    # Дерево установленных пакетов с блокировкой их версий
-└── package.json                         # Список зависимостей
+│   └── reducers/                            # Reducers
+│   │   └── index.js                         
+│   └── services/                            # Сервисы
+│   │   └── bookstore-services.js            # Сервис для работы с API
+│   └── utils/                               # Утилиты
+│   │   ├── compose.js                       # Функция compose
+│   │   └── index.js                         
+│   └── index.js                             # Корневой файл проекта
+│   └── store.js                             # Логика создания store
+│                                               
+├── .gitignore                               # Список исключённых файлов из Git
+├── README.md                                # Описание проекта
+├── package-lock.json                        # Дерево установленных пакетов с блокировкой их версий
+└── package.json                             # Список зависимостей
 ```
